@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require("express");
 const app = express();
 
 const environment = process.env.NODE_ENV || 'development'; 
@@ -7,8 +7,8 @@ const database = require('knex')(configuration);
 
 app.use(express.json());
 
-app.get('/', (request, response) => {
+app.get('/projects', (request, response) => {
   response.send('Looks like the server is running!');
 });
 
-export default app; 
+module.exports = app;

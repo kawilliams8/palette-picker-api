@@ -1,4 +1,4 @@
-import app from './app';
+const app = require("./app");
 
 app.locals.title = 'Palette Picker API'
 
@@ -8,4 +8,8 @@ app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on localhost: ${app.get('port')}.`);
 });
 
-export default app; 
+app.get("/", (request, response) => {
+  response.send("We're going to test all the routes!");
+});
+
+module.exports = app; 
