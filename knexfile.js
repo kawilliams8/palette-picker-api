@@ -3,7 +3,7 @@
 module.exports = {
   development: {
     client: 'pg',
-    connection: 'postgres://localhost/palette-picker',
+    connection: 'postgres://localhost/palette_picker',
     migrations: {
       directory: './db/migrations'
     },
@@ -25,7 +25,7 @@ module.exports = {
   },
   test: {
     client: 'pg',
-    connection: 'postgres://localhost/palette-picker_test',
+    connection: 'postgres://localhost/palette_picker_test',
     migrations: {
       directory: './db/migrations'
     },
