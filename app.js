@@ -65,9 +65,96 @@ app.post('/projects', async (request, response) => {
   } else {
     return response.status(422).json({ error: 'Failed to post project!'})
   }
-
 });
 
+app.post('/palettes', async (request, response) => {
+  const palette = request.body;
+
+  for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
+    if (!palette[requiredParameter]) {
+      return response
+        .status(422)
+        .send({
+          error: `Expected format: {
+          palette: <String>,
+          hex_1: <String>,
+          hex_2: <String>,
+          hex_3: <String>,
+          hex_4: <String>,
+          hex_5: <String>,
+          project_name: <String>
+        }. You are missing a "${requiredParameter}" property.`
+        })
+    }
+  }
+
+  const insertedPalette = await database('palettes').insert(palette, 'id');
+
+  if (insertedPalette.length) {
+    return response.status(201).json({ id: insertedPalette[0] })
+  } else {
+    return response.status(422).json({ error: 'Failed to post palette!' })
+  }
+});
+
+app.patch('/projects/:id', async (request, response) => {
+  const project = request.body;
+  const foundProjects = await database('projects').where('id', request.params.id).select();
+
+  if (!project.project) {
+    return response
+      .status(422)
+      .send({
+        error: `Expected format: {
+        project: <String>
+        }. You are missing a "project" property.`})
+  }
+  if (!foundProjects.length) {
+    return response
+      .status(422)
+      .send({
+        error: 'Did not find any projects with that id.'
+      })
+  }
+
+  await database('palettes').where('project_id', request.params.id).update({ project_name: project.project });
+  await database('projects').where('id', request.params.id).update({project: project.project});
+  return response.status(201).json(`Project with id ${request.params.id} has been successfully updated.`);
+});
+
+app.patch('/palettes/:id', async (request, response) => {
+  const palette = request.body;
+  const foundPalettes = await database('palettes').where('id', request.params.id).first();
+
+  for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
+    if (!palette[requiredParameter]) {
+      return response
+        .status(422)
+        .send({
+          error: `Expected format: {
+          palette: <String>,
+          hex_1: <String>,
+          hex_2: <String>,
+          hex_3: <String>,
+          hex_4: <String>,
+          hex_5: <String>,
+          project_name: <String>
+        }. You are missing a "${requiredParameter}" property.`
+        })
+    }
+  }
+  if (!foundPalettes) {
+    return response
+      .status(422)
+      .send({
+        error: 'Did not find any palettes with that id.'
+      })
+  }
+
+  await database('palettes').where('id', request.params.id).update(palette);
+  return response.status(201).json(`Palette with id ${request.params.id} has been successfully updated.`);
+  
+});
 
 
 module.exports = app;

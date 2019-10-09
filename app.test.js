@@ -114,4 +114,143 @@ describe('Server', () => {
     });
   });
 
+  describe('POST /palettes', () => {
+    it('should successfully post a new palette to the db', async () => {
+      const newPalette = { 
+        palette: "Strawberry shortcake", 
+        hex_1: "EFEFEF", 
+        hex_2: "EFEFEF", 
+        hex_3: "EFEFEF", 
+        hex_4: "EFEFEF", 
+        hex_5: "EFEFEF",
+        project_name: "Project_One"
+      }
+      const res = await request(app).post('/palettes').send(newPalette);
+      const palette = await database('palettes').where('palette', 'like', `%${newPalette.palette}%`).first();
+
+      expect(res.status).toBe(201);
+      expect(palette.palette).toEqual(newPalette.palette);
+    });
+
+    it('should return a 422 and a message "Request body is missing a parameter"', async () => {
+      const newPalette = {
+        palette: "Strawberry shortcake",
+        hex_1: "EFEFEF",
+        hex_2: "EFEFEF",
+        hex_3: "EFEFEF",
+        hex_5: "EFEFEF",
+        project_name: "Project_One"
+      }
+
+      const res = await request(app).post('/palettes').send(newPalette);
+
+      expect(res.status).toBe(422);
+      expect(res.body.error).toEqual(
+        `Expected format: {
+          palette: <String>,
+          hex_1: <String>,
+          hex_2: <String>,
+          hex_3: <String>,
+          hex_4: <String>,
+          hex_5: <String>,
+          project_name: <String>
+        }. You are missing a "hex_4" property.`
+      );
+    });
+  });
+
+  describe('PATCH /projects/:id', () => {
+    it('should update an existing project and all associated palette project names', async () => {
+      const replacementProject = { project: 'NewName' };
+      const projectToReplace = await database('projects').first();
+      const id = projectToReplace.id;
+      const res = await request(app).patch(`/projects/${id}`).send(replacementProject);
+      const testPalettes = await database('palettes').select();
+      expect(res.status).toBe(201)
+      expect(res.body).toEqual(`Project with id ${id} has been successfully updated.`);
+    });
+
+    it('should return status 422 and a message "Missing project name"', async () => {
+      const replacementProject = { blib: 'Blob' };
+      const projectToReplace = await database('projects').first();
+      const id = projectToReplace.id;
+      const res = await request(app).patch(`/projects/${id}`).send(replacementProject);
+      
+      expect(res.status).toBe(422)
+      expect(res.body.error).toEqual(`Expected format: {
+        project: <String>
+        }. You are missing a "project" property.`);
+      });
+
+    it('should return status 422 and a message "No project with that id found"', async () => {
+      const replacementProject = { project: 'NewName' };
+      const id = 100000000;
+      const res = await request(app).patch(`/projects/${id}`).send(replacementProject);
+
+      expect(res.status).toBe(422)
+      expect(res.body.error).toEqual(`Did not find any projects with that id.`);
+    });
+  });
+
+  describe('PATCH /palettes/:id', () => {
+    it('should update an existing palette\'s information', async () => {
+      const paletteToReplace = await database('palettes').where('project_name', 'Project_One').first();
+      const replacementPalette = { 
+        palette: 'NewName', 
+        hex_1: '#C70039',
+        hex_2: '#C70039', 
+        hex_3: '#C70039', 
+        hex_4: '#C70039', 
+        hex_5: '#C70039', 
+        project_name: 'Project_One'};
+      const id = paletteToReplace.id;
+      const res = await request(app).patch(`/palettes/${id}`).send(replacementPalette);
+      
+      expect(res.status).toBe(201)
+      expect(res.body).toEqual(`Palette with id ${id} has been successfully updated.`);
+    });
+
+    it('should return status 422 and a message "Missing property"', async () => {
+     const replacementPalette = {
+        palette: 'NewName',
+        hex_1: '#C70039',
+        hex_2: '#C70039',
+        hex_3: '#C70039',
+        hex_4: '#C70039',
+        project_name: 'Project_One'
+      };
+      const paletteToReplace = await database('palettes').first();
+      const id = paletteToReplace.id;
+      const res = await request(app).patch(`/palettes/${id}`).send(replacementPalette);
+
+      expect(res.status).toBe(422)
+      expect(res.body.error).toEqual(`Expected format: {
+          palette: <String>,
+          hex_1: <String>,
+          hex_2: <String>,
+          hex_3: <String>,
+          hex_4: <String>,
+          hex_5: <String>,
+          project_name: <String>
+        }. You are missing a "hex_5" property.`);
+    });
+
+    it('should return status 422 and a message "No project with that id found"', async () => {
+      const replacementPalette = {
+        palette: 'NewName',
+        hex_1: '#C70039',
+        hex_2: '#C70039',
+        hex_3: '#C70039',
+        hex_4: '#C70039',
+        hex_5: '#C70039',
+        project_name: 'Project_One'
+      };
+      const id = 100000000;
+      const res = await request(app).patch(`/palettes/${id}`).send(replacementPalette);
+
+      expect(res.status).toBe(422)
+      expect(res.body.error).toEqual(`Did not find any palettes with that id.`);
+    });
+  });
+  
 })
