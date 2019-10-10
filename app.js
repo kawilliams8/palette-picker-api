@@ -19,7 +19,8 @@ app.get('/api/v1/projects', async (request, response) => {
 
 app.get('/api/v1/palettes', async (request, response) => {
   const palettes = await database('palettes').select();
-  const { hex } = request.query;
+  const hex = request.query.hex ? request.query.hex.toUpperCase() : null;
+
   if (hex) {
     const foundPalettes = await database('palettes')
     .where("hex_1", `#${hex}`)
@@ -83,7 +84,14 @@ app.post('/api/v1/projects', async (request, response) => {
 });
 
 app.post('/api/v1/palettes', async (request, response) => {
-  const palette = request.body;
+  const palette = {};
+  Object.keys(request.body).forEach(key => {
+    if (key.includes('hex')) {
+      palette[key] = request.body[key].toUpperCase();
+    } else {
+      palette[key] = request.body[key]
+    }
+  });
 
   for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
     if (!palette[requiredParameter]) {
@@ -138,7 +146,14 @@ app.patch('/api/v1/projects/:id', async (request, response) => {
 });
 
 app.patch('/api/v1/palettes/:id', async (request, response) => {
-  const palette = request.body;
+  const palette = {};
+  Object.keys(request.body).forEach(key => {
+    if (key.includes('hex')) {
+      palette[key] = request.body[key].toUpperCase();
+    } else {
+      palette[key] = request.body[key]
+    }
+  });
   const foundPalettes = await database('palettes').where('id', request.params.id).first();
 
   for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
