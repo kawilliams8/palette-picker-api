@@ -2,14 +2,14 @@ const express = require('express');
 const app = express();
 const regeneratorRuntime = require('regenerator-runtime');
 
-const environment = process.env.NODE_ENV || 'development'; 
+const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
 app.use(express.json());
 
 app.get('/', (request, response) => {
-  response.send('We\'re going to test all the routes!');
+  response.send('Welcome to Palette Picker!');
 });
 
 app.get('/api/v1/projects', async (request, response) => {
@@ -191,11 +191,4 @@ app.delete('/api/v1/palettes/:id', async (request, response) => {
   }
 });
 
-<<<<<<< Updated upstream
-
-
-
-module.exports = app;
-=======
 module.exports = app; 
->>>>>>> Stashed changes
