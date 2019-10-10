@@ -9,7 +9,7 @@ const database = require('knex')(configuration);
 app.use(express.json());
 
 app.get('/', (request, response) => {
-  response.send('We\'re going to test all the routes!');
+  response.send('Welcome to Palette Picker!');
 });
 
 app.get('/api/v1/projects', async (request, response) => {
