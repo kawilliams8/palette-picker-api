@@ -2,14 +2,14 @@ const express = require('express');
 const app = express();
 const regeneratorRuntime = require('regenerator-runtime');
 
-const environment = process.env.NODE_ENV || 'development'; 
+const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
 app.use(express.json());
 
 app.get('/', (request, response) => {
-  response.send('We\'re going to test all the routes!');
+  response.send('Welcome to Palette Picker!');
 });
 
 app.get('/api/v1/projects', async (request, response) => {
@@ -19,6 +19,21 @@ app.get('/api/v1/projects', async (request, response) => {
 
 app.get('/api/v1/palettes', async (request, response) => {
   const palettes = await database('palettes').select();
+  const { hex } = request.query;
+  if (hex) {
+    const foundPalettes = await database('palettes')
+    .where("hex_1", `#${hex}`)
+    .orWhere("hex_2", `#${hex}`)
+    .orWhere("hex_3", `#${hex}`)
+    .orWhere("hex_4", `#${hex}`)
+    .orWhere("hex_5", `#${hex}`)
+    .select();
+    if (foundPalettes.length) {
+      return response.status(200).json(foundPalettes)
+    } else {
+      return response.status(404).json({ error: 'No palette with that hex code found.'})
+    }
+  }
   return response.status(200).json(palettes);
 });
 
@@ -175,8 +190,5 @@ app.delete('/api/v1/palettes/:id', async (request, response) => {
     response.status(404).json({ error: `No palette with id ${request.params.id}` })
   }
 });
-
-
-
 
 module.exports = app; 
