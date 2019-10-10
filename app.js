@@ -12,17 +12,17 @@ app.get('/', (request, response) => {
   response.send('We\'re going to test all the routes!');
 });
 
-app.get('/projects', async (request, response) => {
+app.get('/api/v1/projects', async (request, response) => {
   const projects = await database('projects').select();
   return response.status(200).json(projects);
 });
 
-app.get('/palettes', async (request, response) => {
+app.get('/api/v1/palettes', async (request, response) => {
   const palettes = await database('palettes').select();
   return response.status(200).json(palettes);
 });
 
-app.get('/projects/:id', async (request, response) => {
+app.get('/api/v1/projects/:id', async (request, response) => {
   const project = await database('projects').where('id', request.params.id).first();
   if (project) {
     return response.status(200).json(project);
@@ -31,7 +31,7 @@ app.get('/projects/:id', async (request, response) => {
   }
 });
 
-app.get('/palettes/:id', async (request, response) => {
+app.get('/api/v1/palettes/:id', async (request, response) => {
   const palette = await database('palettes').where('id', request.params.id).first();
   if (palette) {
     return response.status(200).json(palette);
@@ -40,7 +40,7 @@ app.get('/palettes/:id', async (request, response) => {
   }
 });
 
-app.post('/projects', async (request, response) => {
+app.post('/api/v1/projects', async (request, response) => {
   const project = request.body;
   const duplicateProject = await database('projects').where('project', 'like', `%${project.project}%`);
   if (!project.project) {
@@ -67,7 +67,7 @@ app.post('/projects', async (request, response) => {
   }
 });
 
-app.post('/palettes', async (request, response) => {
+app.post('/api/v1/palettes', async (request, response) => {
   const palette = request.body;
 
   for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
@@ -97,7 +97,7 @@ app.post('/palettes', async (request, response) => {
   }
 });
 
-app.patch('/projects/:id', async (request, response) => {
+app.patch('/api/v1/projects/:id', async (request, response) => {
   const project = request.body;
   const foundProjects = await database('projects').where('id', request.params.id).select();
 
@@ -122,7 +122,7 @@ app.patch('/projects/:id', async (request, response) => {
   return response.status(201).json(`Project with id ${request.params.id} has been successfully updated.`);
 });
 
-app.patch('/palettes/:id', async (request, response) => {
+app.patch('/api/v1/palettes/:id', async (request, response) => {
   const palette = request.body;
   const foundPalettes = await database('palettes').where('id', request.params.id).first();
 
@@ -155,7 +155,7 @@ app.patch('/palettes/:id', async (request, response) => {
   return response.status(201).json(`Palette with id ${request.params.id} has been successfully updated.`);
 });
 
-app.delete('/projects/:id', async (request, response) => {
+app.delete('/api/v1/projects/:id', async (request, response) => {
   await database('palettes').where('project_id', request.params.id).del();
   const deletedProject = await database('projects').where('id', request.params.id).del();
 
@@ -166,7 +166,7 @@ app.delete('/projects/:id', async (request, response) => {
   }
 });
 
-app.delete('/palettes/:id', async (request, response) => {
+app.delete('/api/v1/palettes/:id', async (request, response) => {
   const deletedPalette = await database('palettes').where('id', request.params.id).del();
 
   if (deletedPalette) {
