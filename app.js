@@ -157,4 +157,4 @@ app.patch('/palettes/:id', async (request, response) => {
 });
 
 
-module.exports = app;
+module.exports = app; 
