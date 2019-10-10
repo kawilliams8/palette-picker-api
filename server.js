@@ -9,7 +9,7 @@ app.listen(app.get('port'), () => {
 });
 
 app.get("/", (request, response) => {
-  response.send("We're going to test all the routes!");
+  response.send("This is Palette Picker!");
 });
 
 module.exports = app; 
