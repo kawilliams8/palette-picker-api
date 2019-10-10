@@ -11,7 +11,6 @@ notifications:
   email: false
 deploy:
   provider: heroku
+  app: palette-picker-api-williams
   api_key:
     secure: C86OqL5UyatGDK3u3pgu8n/XnGCCu/mlFKS3nFpGG/Y/DHS9T+bWdA0TqXbEhZYV8s6qf7UbLog4GdPwYjYhlTjDdrlQ5RBoSAwwM0b83FNpicgSTA7Fd0m+GiNTOhCqhfJ8MDUib3hwILJI90YAD/SWqr+G89lfLYVlOoHCoek6NafKI0zmpCI2n+NWMDMZj9lBYpLFbMIg4uIhVOLO1Rjs8grv2mgPXEx7COz8uO1hE4vtDGOpziszQ2l2QYuIn9cd06fpxafqnc2Lg6Xp4gAEOTxp7T77YqzLuRKzknl1MPUBK2i6Llf/SR8ZHO8DqRwV4Bx1ze0PLbFWhLVV+6NhmUMELbpa1LMj6Q8vNY/+fpDLYccVNY71xD5/3W8TRba+A1XNIqrb1rCciuXmfYgZtcITJq/0DocVS38jG15hQMcWo5x3lAuUFf16kf0C+QNblzBOwBP8tTH4+RZmfvtKGXZZ5Ts/JAM8ly/B+vnZJo9MVqFUCkFsZ5UC9zb31bZQrkJjbLKbScaoQqoEpQSUdaCdX2cy+VcyYq51LIzHo5CFieJdh6bNVlni6DEGBm6dyU6eQ/Ot0DtOohZ4Jz3ft0xzZdcF8yrIr2O9xkaTeavMAOPOOs4y2JKl7ec8urud/IL2seaW+e4NUhuBthwvKSloWTHebcwq/laOIvc=
-  app: palette-picker-api-williams
-  skip_cleanup: true
