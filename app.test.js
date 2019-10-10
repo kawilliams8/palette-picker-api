@@ -252,5 +252,48 @@ describe('Server', () => {
       expect(res.body.error).toEqual(`Did not find any palettes with that id.`);
     });
   });
-  
-})
+
+  describe('DELETE /projects/:id', () => {
+    it('should remove a project and all associated palettes', async () => {
+      const project = await database('projects').first();
+      const id = project.id;
+
+      const res = await request(app).delete(`/projects/${id}`);
+
+      expect(res.status).toBe(204);
+    });
+
+    it('should return an error message if there is no project to delete', async () => {
+      const id = 10000000;
+      const res = await request(app).delete(`/projects/${id}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toEqual(`No project with id ${id}`);
+    });
+  });
+
+  describe(' DELETE /palettes/:id', () => {
+    it('should remove a palette', async () => {
+      const palette = await database('palettes').first();
+      const id = palette.id;
+
+      const res = await request(app).delete(`/palettes/${id}`);
+
+      expect(res.status).toBe(204);
+    });
+
+    it('should return an error message if there is no palette to delete', async () => {
+      const id = 10000000;
+      const res = await request(app).delete(`/palettes/${id}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toEqual(`No palette with id ${id}`);
+    });
+  });
+
+  describe('GET /palettes?hex_code=', () => {
+    it('should return a palette containing the hex code along with the associated project', async () => {
+      
+    });
+  });
+});

@@ -153,8 +153,30 @@ app.patch('/palettes/:id', async (request, response) => {
 
   await database('palettes').where('id', request.params.id).update(palette);
   return response.status(201).json(`Palette with id ${request.params.id} has been successfully updated.`);
-  
 });
+
+app.delete('/projects/:id', async (request, response) => {
+  await database('palettes').where('project_id', request.params.id).del();
+  const deletedProject = await database('projects').where('id', request.params.id).del();
+
+  if(deletedProject) {
+    response.status(204).send();
+  } else {
+    response.status(404).json({ error: `No project with id ${request.params.id}` })
+  }
+});
+
+app.delete('/palettes/:id', async (request, response) => {
+  const deletedPalette = await database('palettes').where('id', request.params.id).del();
+
+  if (deletedPalette) {
+    response.status(204).send();
+  } else {
+    response.status(404).json({ error: `No palette with id ${request.params.id}` })
+  }
+});
+
+
 
 
 module.exports = app;
