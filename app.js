@@ -19,6 +19,21 @@ app.get('/api/v1/projects', async (request, response) => {
 
 app.get('/api/v1/palettes', async (request, response) => {
   const palettes = await database('palettes').select();
+  const { hex } = request.query;
+  if (hex) {
+    const foundPalettes = await database('palettes')
+    .where("hex_1", `#${hex}`)
+    .orWhere("hex_2", `#${hex}`)
+    .orWhere("hex_3", `#${hex}`)
+    .orWhere("hex_4", `#${hex}`)
+    .orWhere("hex_5", `#${hex}`)
+    .select();
+    if (foundPalettes.length) {
+      return response.status(200).json(foundPalettes)
+    } else {
+      return response.status(404).json({ error: 'No palette with that hex code found.'})
+    }
+  }
   return response.status(200).json(palettes);
 });
 
@@ -176,7 +191,11 @@ app.delete('/api/v1/palettes/:id', async (request, response) => {
   }
 });
 
+<<<<<<< Updated upstream
 
 
 
 module.exports = app;
+=======
+module.exports = app; 
+>>>>>>> Stashed changes

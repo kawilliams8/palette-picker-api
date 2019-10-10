@@ -293,7 +293,42 @@ describe('Server', () => {
 
   describe('GET /palettes?hex_code=', () => {
     it('should return a palette containing the hex code along with the associated project', async () => {
+      const paletteToReplace = await database('palettes').where('project_name', 'Project_One').first();
+      const paletteToReplaceTwo = await database('palettes').where('project_name', 'Project_Two').first();
+      const id = paletteToReplace.id;
+      const idTwo = paletteToReplaceTwo.id;
+      const replacementPalette = {
+        palette: 'NewName',
+        hex_1: '#EFEFEF',
+        hex_2: '#EFEFEF',
+        hex_3: '#C70039',
+        hex_4: '#EFEFEF',
+        hex_5: '#EFEFEF',
+        project_name: 'Project_One'
+      };
+      const replacementPaletteTwo = {
+        palette: 'NewName',
+        hex_1: '#EFEFEF',
+        hex_2: '#EFEFEF',
+        hex_3: '#EFEFEF',
+        hex_4: '#EFEFEF',
+        hex_5: '#C70039',
+        project_name: 'Project_One'
+      };
+      await request(app).patch(`/api/v1/palettes/${id}`).send(replacementPalette);
+      await request(app).patch(`/api/v1/palettes/${idTwo}`).send(replacementPaletteTwo);
+      const res = await request(app).get(`/api/v1/palettes?hex=C70039`);
+      const result = res.body;
+      const expected = [ replacementPalette, replacementPaletteTwo];
+      expect(res.status).toBe(200);
+      expect(expected).toEqual( [replacementPalette, replacementPaletteTwo] );
+    });
 
+    it('should return 404 and an error message if no palette with matching hex is found', async () => {
+      const fakeHex = '890984';
+      const res = await request(app).get(`/api/v1/palettes?hex=${fakeHex}`);
+      expect(res.status).toBe(404);
+      expect(res.body.error).toEqual('No palette with that hex code found.')
     });
   });
 });
