@@ -118,9 +118,9 @@ describe('Server', () => {
     it('should successfully post a new palette to the db', async () => {
       const newPalette = { 
         palette: "Strawberry shortcake", 
-        hex_1: "EFEFEF", 
+        hex_1: "efefef", 
         hex_2: "EFEFEF", 
-        hex_3: "EFEFEF", 
+        hex_3: "efefef", 
         hex_4: "EFEFEF", 
         hex_5: "EFEFEF",
         project_name: "Project_One"
@@ -325,7 +325,7 @@ describe('Server', () => {
     });
 
     it('should return 404 and an error message if no palette with matching hex is found', async () => {
-      const fakeHex = '890984';
+      const fakeHex = '890b84';
       const res = await request(app).get(`/api/v1/palettes?hex=${fakeHex}`);
       expect(res.status).toBe(404);
       expect(res.body.error).toEqual('No palette with that hex code found.')
