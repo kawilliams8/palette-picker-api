@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const regeneratorRuntime = require('regenerator-runtime');
 
@@ -6,7 +7,20 @@ const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
+app.use(cors());
 app.use(express.json());
+
+// const whitelist = ['http://localhost:3000'];
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+
 
 app.get('/', (request, response) => {
   response.send('Welcome to Palette Picker!');
