@@ -26,12 +26,12 @@ app.get('/', (request, response) => {
   response.send('Welcome to Palette Picker!');
 });
 
-app.get('/api/v1/projects', async (request, response) => {
+app.get('/api/v1/projects/', async (request, response) => {
   const projects = await database('projects').select();
   return response.status(200).json(projects);
 });
 
-app.get('/api/v1/palettes', async (request, response) => {
+app.get('/api/v1/palettes/', async (request, response) => {
   const palettes = await database('palettes').select();
   const hex = request.query.hex ? request.query.hex.toUpperCase() : null;
 
@@ -70,20 +70,22 @@ app.get('/api/v1/palettes/:id', async (request, response) => {
   }
 });
 
-app.post('/api/v1/projects', async (request, response) => {
+app.post('/api/v1/projects/', async (request, response) => {
+  console.log('are we in the server?')
   const project = request.body;
+  console.log('on server side', project)
   const duplicateProject = await database('projects').where('project', 'like', `%${project.project}%`);
   if (!project.project) {
     return response 
       .status(422)
-      .send({
+      .json({
         error: `Expected format: {
           project: <String>
         }. You are missing a "project" property.`})
   } else if (duplicateProject.length) {
     return response
       .status(400)
-      .send({
+      .json({
         error: 'Duplicate project name. Please choose another name.'
       });
   }
@@ -97,7 +99,7 @@ app.post('/api/v1/projects', async (request, response) => {
   }
 });
 
-app.post('/api/v1/palettes', async (request, response) => {
+app.post('/api/v1/palettes/', async (request, response) => {
   const palette = {};
   Object.keys(request.body).forEach(key => {
     if (key.includes('hex')) {
@@ -106,12 +108,16 @@ app.post('/api/v1/palettes', async (request, response) => {
       palette[key] = request.body[key]
     }
   });
+  const matchingProject = await database('projects').where('project', palette.project_name).first();
+  const id = matchingProject.id;
+  const paletteToInsert = {...palette, project_id: id};
+
 
   for (let requiredParameter of ['palette', 'hex_1', 'hex_2', 'hex_3', 'hex_4', 'hex_5', 'project_name']) {
     if (!palette[requiredParameter]) {
       return response
         .status(422)
-        .send({
+        .json({
           error: `Expected format: {
           palette: <String>,
           hex_1: <String>,
@@ -125,7 +131,7 @@ app.post('/api/v1/palettes', async (request, response) => {
     }
   }
 
-  const insertedPalette = await database('palettes').insert(palette, 'id');
+  const insertedPalette = await database('palettes').insert(paletteToInsert, 'id');
 
   if (insertedPalette.length) {
     return response.status(201).json({ id: insertedPalette[0] })
@@ -141,7 +147,7 @@ app.patch('/api/v1/projects/:id', async (request, response) => {
   if (!project.project) {
     return response
       .status(422)
-      .send({
+      .json({
         error: `Expected format: {
         project: <String>
         }. You are missing a "project" property.`})
@@ -149,14 +155,14 @@ app.patch('/api/v1/projects/:id', async (request, response) => {
   if (!foundProjects.length) {
     return response
       .status(422)
-      .send({
+      .json({
         error: 'Did not find any projects with that id.'
       })
   }
 
   await database('palettes').where('project_id', request.params.id).update({ project_name: project.project });
   await database('projects').where('id', request.params.id).update({project: project.project});
-  return response.status(201).json(`Project with id ${request.params.id} has been successfully updated.`);
+  return response.status(201).send(`Project with id ${request.params.id} has been successfully updated.`);
 });
 
 app.patch('/api/v1/palettes/:id', async (request, response) => {
@@ -174,7 +180,7 @@ app.patch('/api/v1/palettes/:id', async (request, response) => {
     if (!palette[requiredParameter]) {
       return response
         .status(422)
-        .send({
+        .json({
           error: `Expected format: {
           palette: <String>,
           hex_1: <String>,
@@ -190,13 +196,13 @@ app.patch('/api/v1/palettes/:id', async (request, response) => {
   if (!foundPalettes) {
     return response
       .status(422)
-      .send({
+      .json({
         error: 'Did not find any palettes with that id.'
       })
   }
 
   await database('palettes').where('id', request.params.id).update(palette);
-  return response.status(201).json(`Palette with id ${request.params.id} has been successfully updated.`);
+  return response.status(201).send(`Palette with id ${request.params.id} has been successfully updated.`);
 });
 
 app.delete('/api/v1/projects/:id', async (request, response) => {
