@@ -166,8 +166,9 @@ describe('Server', () => {
       const id = projectToReplace.id;
       const res = await request(app).patch(`/api/v1/projects/${id}`).send(replacementProject);
       const testPalettes = await database('palettes').select();
-      expect(res.status).toBe(201)
-      expect(res.body).toEqual(`Project with id ${id} has been successfully updated.`);
+      console.log('in patch projects test', res);
+      expect(res.status).toBe(201);
+      expect(res.text).toEqual(`Project with id ${id} has been successfully updated.`);
     });
 
     it('should return status 422 and a message "Missing project name"', async () => {
@@ -205,9 +206,9 @@ describe('Server', () => {
         project_name: 'Project_One'};
       const id = paletteToReplace.id;
       const res = await request(app).patch(`/api/v1/palettes/${id}`).send(replacementPalette);
-      
+      console.log('in patch palettes test', res)
       expect(res.status).toBe(201)
-      expect(res.body).toEqual(`Palette with id ${id} has been successfully updated.`);
+      expect(res.text).toEqual(`Palette with id ${id} has been successfully updated.`);
     });
 
     it('should return status 422 and a message "Missing property"', async () => {
