@@ -15,7 +15,7 @@ Color Schema was built with Node.js, Express, Knex, PostgreSQL, Postman, Travis 
 
 ## Database Design
 
-![Database Schema](https://github.com/kawilliams8/palette-picker-api/images/db_schema.png)
+![Database Schema](https://github.com/kawilliams8/palette-picker-api/blob/readme/images/db_schema.png)
 
 ## Project Setup
 
